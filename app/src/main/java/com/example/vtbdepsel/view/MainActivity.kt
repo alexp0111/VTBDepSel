@@ -1,10 +1,17 @@
 package com.example.vtbdepsel.view
 
 import android.Manifest
+import android.app.Dialog
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -16,6 +23,7 @@ import com.example.vtbdepsel.utils.UiState
 import com.example.vtbdepsel.viewmodel.MainViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.directions.DirectionsFactory
 import com.yandex.mapkit.geometry.Point
@@ -64,6 +72,87 @@ class MainActivity : AppCompatActivity() {
         viewModel.updateDepartments()
     }
 
+    private fun initViews() {
+        searchFAB = findViewById(R.id.btn_search)
+        plusFAB = findViewById(R.id.btn_plus)
+        minusFAB = findViewById(R.id.btn_minus)
+        findMeFAB = findViewById(R.id.btn_nav)
+        pickerCircle = findViewById(R.id.picker_circle)
+        picker[findViewById(R.id.picker_1)] = findViewById(R.id.img_picker_1)
+        picker[findViewById(R.id.picker_2)] = findViewById(R.id.img_picker_2)
+        picker[findViewById(R.id.picker_3)] = findViewById(R.id.img_picker_3)
+
+        PickerAnimator.animate(
+            resources, this, picker, pickerCircle
+        )
+    }
+
+    private fun setUpClickListeners() {
+        searchFAB.setOnClickListener {
+            // viewModel.ping()
+
+            showATMDialog()
+        }
+        plusFAB.setOnClickListener {
+            setCameraToPosition(zoom = map.cameraPosition.zoom * ZOOM_IN_MULT)
+        }
+        minusFAB.setOnClickListener {
+            setCameraToPosition(zoom = map.cameraPosition.zoom * ZOOM_OUT_MULT)
+        }
+        findMeFAB.setOnClickListener {
+            resetCameraToUser()
+        }
+    }
+
+    private fun observers() {
+        viewModel.depList.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    // show progressbar
+                }
+                is UiState.Failure -> {
+                    // toast(state.error)
+                }
+
+                is UiState.Success -> {
+                    // show points
+                }
+            }
+        }
+    }
+
+    private fun showATMDialog() {
+        val dialog = Dialog(this)
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.bottom_atm)
+
+        dialog.show()
+        dialog.window?.apply {
+            setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            attributes.windowAnimations = R.style.DialogAnimation
+            setGravity(Gravity.BOTTOM)
+        }
+    }
+
+    //
+    // Working with camera
+    //
+
+    private fun drawUserLocationPoint(point: Point) {
+        val imageProvider = ImageProvider.fromResource(this, R.drawable.my_point)
+        placemarksCollection.clear()
+        placemarksCollection.addPlacemark(
+            point,
+            imageProvider,
+            IconStyle().apply {
+                scale = 0.3f
+                zIndex = 1f
+            }
+        )
+    }
+
     private fun resetCameraToUser() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this@MainActivity)
         if (ActivityCompat.checkSelfPermission(
@@ -85,48 +174,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initViews() {
-        searchFAB = findViewById(R.id.btn_search)
-        plusFAB = findViewById(R.id.btn_plus)
-        minusFAB = findViewById(R.id.btn_minus)
-        findMeFAB = findViewById(R.id.btn_nav)
-        pickerCircle = findViewById(R.id.picker_circle)
-        picker[findViewById(R.id.picker_1)] = findViewById(R.id.img_picker_1)
-        picker[findViewById(R.id.picker_2)] = findViewById(R.id.img_picker_2)
-        picker[findViewById(R.id.picker_3)] = findViewById(R.id.img_picker_3)
-
-        PickerAnimator.animate(
-            resources, this, picker, pickerCircle
-        )
-    }
-
-    private fun setUpClickListeners() {
-        searchFAB.setOnClickListener {
-            viewModel.ping()
-        }
-        plusFAB.setOnClickListener {
-            setCameraToPosition(zoom = map.cameraPosition.zoom * ZOOM_IN_MULT)
-        }
-        minusFAB.setOnClickListener {
-            setCameraToPosition(zoom = map.cameraPosition.zoom * ZOOM_OUT_MULT)
-        }
-        findMeFAB.setOnClickListener {
-            resetCameraToUser()
-        }
-    }
-
-    private fun drawUserLocationPoint(point: Point) {
-        val imageProvider = ImageProvider.fromResource(this, R.drawable.my_point)
-        placemarksCollection.addPlacemark(
-            point,
-            imageProvider,
-            IconStyle().apply {
-                scale = 0.3f
-                zIndex = 1f
-            }
-        )
-    }
-
     private fun setCameraToPosition(
         point: Point = map.cameraPosition.target,
         zoom: Float = map.cameraPosition.zoom,
@@ -137,24 +184,10 @@ class MainActivity : AppCompatActivity() {
                 zoom,
                 map.cameraPosition.azimuth,
                 map.cameraPosition.tilt
-            )
-        )
-    }
+            ),
+            Animation(Animation.Type.SMOOTH, 0.3f)
+        ) {
 
-    private fun observers() {
-        viewModel.depList.observe(this) { state ->
-            when (state) {
-                is UiState.Loading -> {
-                    // show progressbar
-                }
-                is UiState.Failure -> {
-                    // toast(state.error)
-                }
-
-                is UiState.Success -> {
-                    // show points
-                }
-            }
         }
     }
 

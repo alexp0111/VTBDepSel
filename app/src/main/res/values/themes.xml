@@ -34,4 +34,27 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">1000dp</item>
     </style>
+
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
+    </style>
+
+    <style name="TextHeader" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/md_theme_light_onPrimary</item>
+        <item name="android:fontFamily">@font/vtb_bold</item>
+    </style>
+
+    <style name="TextMid" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/md_theme_light_onPrimary</item>
+        <item name="android:fontFamily">@font/vtb_regular</item>
+    </style>
+
+    <style name="TextSmallBold" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/unpicked</item>
+        <item name="android:fontFamily">@font/vtb_demibold</item>
+    </style>
 </resources>
