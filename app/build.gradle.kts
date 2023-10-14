@@ -70,6 +70,9 @@ dependencies {
     // MapKit
     implementation("com.yandex.android:maps.mobile:4.3.2-full")
 
+    // graph
+    implementation("com.diogobernardino:williamchart:3.10.1")
+
     // Worker
     implementation("androidx.hilt:hilt-work:1.0.0")
     implementation("androidx.work:work-runtime-ktx:2.8.1")

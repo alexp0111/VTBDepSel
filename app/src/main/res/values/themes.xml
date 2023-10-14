@@ -57,4 +57,10 @@
         <item name="android:textColor">@color/unpicked</item>
         <item name="android:fontFamily">@font/vtb_demibold</item>
     </style>
+
+    <style name="TextThinInfo" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/md_theme_dark_primary</item>
+        <item name="android:fontFamily">@font/vtb_light</item>
+    </style>
 </resources>

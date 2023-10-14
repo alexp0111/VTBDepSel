@@ -49,8 +49,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/atm_cl_all_day"
                 android:layout_width="match_parent"
-                android:layout_marginTop="16dp"
                 android:layout_height="50dp"
+                android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -78,13 +78,64 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
-                android:id="@+id/divider2"
+                android:id="@+id/divider13"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="16dp"
                 android:background="@color/unpicked"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/atm_cl_all_day" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/atm_cl_load"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider13">
+
+                <TextView
+                    android:id="@+id/atm_txt_load"
+                    style="@style/TextSmallBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Загруженность"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.db.williamchart.view.LineChartView
+                    android:id="@+id/line_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="16dp"
+                    app:chart_axis="none"
+                    app:chart_labelsColor="@color/md_theme_light_onPrimary"
+                    app:chart_lineColor="@color/md_theme_light_onPrimary"
+                    app:chart_lineThickness="3dp"
+                    app:chart_smoothLine="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/atm_txt_load" />
+
+                <ImageView
+                    android:id="@+id/atm_img_load"
+                    android:layout_width="0dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/scale"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/line_chart" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/unpicked"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/atm_cl_load" />
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -118,7 +169,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:text="Принимает валюты"
+                        android:text="Выдача валюты"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -214,7 +265,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:text="Чето про charge"
+                        android:text="Принимает рубли"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -561,6 +612,27 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/divider5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/unpicked"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/atm_cl_services" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_find_route"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_margin="16dp"
+                android:text="Проложить маршрут"
+                android:textColor="@color/md_theme_light_onPrimary"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider5" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

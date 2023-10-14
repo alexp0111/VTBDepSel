@@ -68,8 +68,12 @@
     <color name="load_low">#1B5E20</color>
 
 
+    <color name="premium">#D500F9</color>
+
+
     <color name="unpicked">#424242</color>
     <color name="picked">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
 
     <color name="black">#000000</color>
     <color name="gray">#44464f</color>

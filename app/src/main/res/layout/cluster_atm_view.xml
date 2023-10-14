@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <LinearLayout
+        android:id="@+id/layout_low_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitXY"
+            android:src="@drawable/atm_low" />
+
+        <TextView
+            android:id="@+id/text_low_pins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="2dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            tools:text="3" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_mid_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitXY"
+            android:src="@drawable/atm_medium" />
+
+        <TextView
+            android:id="@+id/text_mid_pins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="2dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            tools:text="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_high_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitXY"
+            android:src="@drawable/atm_high" />
+
+        <TextView
+            android:id="@+id/text_high_pins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="2dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            tools:text="3" />
+    </LinearLayout>
+
+</merge>
