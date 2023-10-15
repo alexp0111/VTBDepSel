@@ -7,6 +7,9 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import com.example.vtbdepsel.R
 
+/**
+ * Custom cluster view for collapsable collection of departments
+ * */
 class ClusterATMView(context: Context) : LinearLayout(context) {
 
     private val lowText by lazy { findViewById<TextView>(R.id.text_low_pins) }

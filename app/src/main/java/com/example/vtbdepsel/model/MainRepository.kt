@@ -1,10 +1,8 @@
 package com.example.vtbdepsel.model
 
-import android.util.Log
 import com.example.vtbdepsel.model.api.ApiService
 import com.example.vtbdepsel.model.api.data.ApiATMItem
 import com.example.vtbdepsel.model.api.data.ApiBranchItem
-import com.example.vtbdepsel.model.api.data.ApiDepartment
 import com.example.vtbdepsel.model.api.data.ApiPoint
 import com.example.vtbdepsel.model.api.data.CapacityItem
 import com.example.vtbdepsel.model.api.data.FunctionItem
@@ -12,7 +10,12 @@ import com.example.vtbdepsel.utils.UiState
 import java.time.DayOfWeek
 import javax.inject.Inject
 
-
+/**
+ * Main repository, that works with API
+ *
+ * implements Api methods with suspension logic
+ *  & overlaping with UiState
+ * */
 class MainRepository @Inject constructor(
     private val api: ApiService
 ) {

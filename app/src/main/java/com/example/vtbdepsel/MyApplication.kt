@@ -4,6 +4,10 @@ import android.app.Application
 import com.yandex.mapkit.MapKitFactory
 import dagger.hilt.android.HiltAndroidApp
 
+
+/**
+ * Application class for dagger hilt & MapKit init
+ * */
 @HiltAndroidApp
 class MyApplication: Application() {
     override fun onCreate() {

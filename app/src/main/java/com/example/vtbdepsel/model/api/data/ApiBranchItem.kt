@@ -1,5 +1,9 @@
 package com.example.vtbdepsel.model.api.data
 
+
+/**
+ * API Model of department
+ * */
 data class ApiBranchItem(
     val address: String?,
     val distance: String?,

@@ -1,33 +1,31 @@
 package com.example.vtbdepsel.view
 
 import android.animation.ObjectAnimator
-import android.content.Context
 import android.content.res.Resources
-import android.util.TypedValue
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import com.example.vtbdepsel.R
 
-
+/**
+ * Special animator for picker
+ * */
 object PickerAnimator {
 
     fun animate(
         resources: Resources,
-        context: Context?,
         picker: MutableMap<ConstraintLayout, ImageView>,
         pickerCircle: ConstraintLayout
     ) {
         for (mutableEntry in picker) {
             mutableEntry.key.setOnClickListener {
-                setUpPickerTransition(context, resources, mutableEntry, picker, pickerCircle)
+                setUpPickerTransition(resources, mutableEntry, picker, pickerCircle)
             }
         }
     }
 
     private fun setUpPickerTransition(
-        context: Context?,
         resources: Resources,
         entry: MutableMap.MutableEntry<ConstraintLayout, ImageView>,
         picker: MutableMap<ConstraintLayout, ImageView>,

@@ -1,5 +1,9 @@
 package com.example.vtbdepsel.utils
 
+
+/**
+ * Classes, that are necessary to handle type division with capacity load
+ * */
 enum class PlacemarkType {
     HIGH,
     MEDIUM,

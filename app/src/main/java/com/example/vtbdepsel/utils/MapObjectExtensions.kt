@@ -5,6 +5,10 @@ import androidx.core.content.ContextCompat
 import com.example.vtbdepsel.R
 import com.yandex.mapkit.map.PolylineMapObject
 
+/**
+ * Extensions for working with polyline styling
+ * */
+
 // Main route
 fun PolylineMapObject.styleMainRoute(context: Context) {
     zIndex = 10f

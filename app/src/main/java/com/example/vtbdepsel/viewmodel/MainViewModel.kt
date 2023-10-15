@@ -1,5 +1,6 @@
 package com.example.vtbdepsel.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +10,6 @@ import com.example.vtbdepsel.model.api.data.ApiATMItem
 import com.example.vtbdepsel.model.api.data.ApiBranchItem
 import com.example.vtbdepsel.model.api.data.ApiPoint
 import com.example.vtbdepsel.utils.UiState
-import com.yandex.mapkit.geometry.Point
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,6 +19,11 @@ import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import javax.inject.Inject
 
+/**
+ * Main ViewModel, that hold two actual states of departments and ATM's
+ *
+ * Also responsible for optimal point request
+ * */
 @HiltViewModel
 class MainViewModel @Inject constructor(
     val repository: MainRepository
@@ -56,6 +61,7 @@ class MainViewModel @Inject constructor(
                         it.capacity = cap.data.capacity
                         it.foos = foos.data
                     }
+                    Log.d("VIEW_MODEL", it.address.toString())
                 }
             }
             withContext(Dispatchers.Main) {
@@ -69,9 +75,11 @@ class MainViewModel @Inject constructor(
         atmLoadJob?.cancel()
         atmLoadJob = viewModelScope.plus(Dispatchers.IO).launch {
             val result = repository.getAtms(latitude, longitude)
-            // if (result is UiState.Success) {
-            //
-            // }
+            if (result is UiState.Success) {
+                result.data.forEach {
+                    Log.d("VIEW_MODEL_2", it.address.toString())
+                }
+            }
             withContext(Dispatchers.Main) {
                 _atmList.value = result
             }

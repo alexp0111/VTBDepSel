@@ -1,6 +1,7 @@
 package com.example.vtbdepsel.view
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Intent
@@ -13,7 +14,6 @@ import android.os.Bundle
 import android.provider.CalendarContract.Events
 import android.util.Log
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.ImageView
@@ -58,7 +58,6 @@ import com.yandex.mapkit.map.ClusterListener
 import com.yandex.mapkit.map.ClusterizedPlacemarkCollection
 import com.yandex.mapkit.map.IconStyle
 import com.yandex.mapkit.map.Map
-import com.yandex.mapkit.map.MapObject
 import com.yandex.mapkit.map.MapObjectCollection
 import com.yandex.mapkit.map.MapObjectTapListener
 import com.yandex.mapkit.map.PolylineMapObject
@@ -68,21 +67,26 @@ import com.yandex.runtime.image.ImageProvider
 import com.yandex.runtime.network.NetworkError
 import com.yandex.runtime.ui_view.ViewProvider
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
-import java.util.UUID
 
+/**
+ * Key UI component of the application.
+ * It holds all UI logic due to achieve simple context workflow in MVP
+ * */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
     private val viewModel: MainViewModel by viewModels()
 
+    // userpoint collection
     private lateinit var placemarksCollection: MapObjectCollection
+
+    // routes collection with metadata
     private var myRoutesPolylineCollection =
         mutableListOf<Triple<PolylineMapObject, String, String>>()
     private lateinit var mapView: MapView
     private lateinit var map: Map
 
+    // base ui components
     private var picker = mutableMapOf<ConstraintLayout, ImageView>()
     private lateinit var pickerCircle: ConstraintLayout
     private lateinit var searchFAB: FloatingActionButton
@@ -90,14 +94,17 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
     private lateinit var minusFAB: FloatingActionButton
     private lateinit var findMeFAB: FloatingActionButton
 
+    // Current user info
     private var userPoint = Point()
     private var addressToVisit = ""
 
+    // Map of deps & atms data
     private var branchMap = mutableMapOf<Int, ApiBranchItem>()
     private var atmMap = mutableMapOf<Int, ApiATMItem>()
 
 
-    val clusterBranchListener = ClusterListener { cluster ->
+    // Listener for Department collection config
+    private val clusterBranchListener = ClusterListener { cluster ->
         val placemarkTypes = cluster.placemarks.map {
             (it.userData as PlacemarkBranch).type
         }
@@ -113,7 +120,8 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
         cluster.appearance.zIndex = 100f
     }
 
-    val clusterATMListener = ClusterListener { cluster ->
+    // Listener for ATM collection config
+    private val clusterATMListener = ClusterListener { cluster ->
         val placemarkTypes = cluster.placemarks.map {
             (it.userData as PlacemarkATM).type
         }
@@ -129,6 +137,7 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
         cluster.appearance.zIndex = 100f
     }
 
+    // Listener for routes
     private val drivingRouteListener = object : DrivingSession.DrivingRouteListener {
         override fun onDrivingRoutes(drivingRoutes: MutableList<DrivingRoute>) {
             routes = drivingRoutes
@@ -147,34 +156,32 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
         }
     }
 
-    private val onBranchPointListener = object : MapObjectTapListener {
-        override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
+    // Listener for Dep touch event
+    private val onBranchPointListener =
+        MapObjectTapListener { mapObject, _ ->
             branchMap[(mapObject.userData as PlacemarkBranch).id]?.let {
                 showDepDialog(it)
             }
-            return true
+            true
         }
-    }
 
-    private val onATMPointListener = object : MapObjectTapListener {
-        override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
-            atmMap[(mapObject.userData as PlacemarkATM).id]?.let {
-                showATMDialog(it)
-            }
-            return true
+    // Listener for ATM touch event
+    private val onATMPointListener = MapObjectTapListener { mapObject, _ ->
+        atmMap[(mapObject.userData as PlacemarkATM).id]?.let {
+            showATMDialog(it)
         }
+        true
     }
 
     // Route tap listener
-    private val onMapObjectTapListener = object : MapObjectTapListener {
-        override fun onMapObjectTap(mapObject: MapObject, point: Point): Boolean {
+    private val onMapObjectTapListener =
+        MapObjectTapListener { mapObject, _ ->
             try {
                 myRoutesPolylineCollection.forEach {
                     it.first.styleAlternativeRoute(this@MainActivity)
                 }
                 (mapObject as PolylineMapObject).styleMainRoute(this@MainActivity)
                 for (i in myRoutesPolylineCollection) {
-                    Log.d("AAAAAA", i.second)
                     if (i.first.hashCode() == mapObject.hashCode()) {
                         findViewById<TextView>(R.id.total_time).text = i.second
                         findViewById<TextView>(R.id.total_dist).text = i.third
@@ -183,9 +190,8 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
             } catch (e: Exception) {
                 Log.d("MAIN_ACTIVITY", "Something went wrong")
             }
-            return true
+            true
         }
-    }
 
     private var routePoints = emptyList<Point>()
         set(value) {
@@ -194,6 +200,7 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
         }
 
 
+    //Listener for route points updates
     private fun onRoutePointsUpdated() {
         myRoutesPolylineCollection.clear()
         val requestPoints = buildList {
@@ -219,6 +226,7 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
             onRoutesUpdated()
         }
 
+    //Listener for route updates
     private fun onRoutesUpdated() {
         routesCollection.clear()
         if (routes.isEmpty()) return
@@ -261,13 +269,14 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
         // Set up viewModel observers
         observers()
 
+        // Init Mapkit components
         mapView = findViewById(R.id.mapview)
         map = mapView.mapWindow.map
         routesCollection = map.mapObjects.addCollection()
         placemarksCollection = map.mapObjects.addCollection()
         drivingRouter = DirectionsFactory.getInstance().createDrivingRouter()
 
-        // Cluster for branch
+        // Cluster for branch & ATM
         clasterizedBranchCollection =
             map.mapObjects.addClusterizedPlacemarkCollection(clusterBranchListener)
 
@@ -293,6 +302,8 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
         clasterizedATMCollection.clusterPlacemarks(CLUSTER_RADIUS, CLUSTER_MIN_ZOOM)
         clasterizedATMCollection.addTapListener(onATMPointListener)
 
+        // Find user
+
         resetCameraToUser {
             viewModel.updateDepartments(it.latitude, it.longitude)
             viewModel.updateAtms(it.latitude, it.longitude)
@@ -311,15 +322,12 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
         picker[findViewById(R.id.picker_3)] = findViewById(R.id.img_picker_3)
 
         PickerAnimator.animate(
-            resources, this, picker, pickerCircle
+            resources, picker, pickerCircle
         )
     }
 
     private fun setUpClickListeners() {
         searchFAB.setOnClickListener {
-            // viewModel.ping()
-            // showATMDialog()
-            // showDepDialog()
             showFilterDialog()
         }
         plusFAB.setOnClickListener {
@@ -333,15 +341,12 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
         }
     }
 
+    // Set up livedata observers
     private fun observers() {
         viewModel.depList.observe(this) { state ->
             when (state) {
-                is UiState.Loading -> {
-                    // show progressbar
-                }
-
                 is UiState.Failure -> {
-                    Log.d("MAIN_ACT", state.error.toString())
+                    Log.d("MAIN_ACTIVITY", state.error.toString())
                 }
 
                 is UiState.Success -> {
@@ -369,15 +374,13 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
                     }
                     clasterizedBranchCollection.clusterPlacemarks(CLUSTER_RADIUS, CLUSTER_MIN_ZOOM)
                 }
+
+                else -> {}
             }
         }
 
         viewModel.atmList.observe(this) { state ->
             when (state) {
-                is UiState.Loading -> {
-                    // show progressbar
-                }
-
                 is UiState.Failure -> {
                     Log.d("MAIN_ACT", state.error.toString())
                 }
@@ -406,6 +409,7 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
                     }
                     clasterizedATMCollection.clusterPlacemarks(CLUSTER_RADIUS, CLUSTER_MIN_ZOOM)
                 }
+                else -> {}
             }
         }
     }
@@ -558,17 +562,12 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
 
         metro.text = branch.metroStation
 
-        Log.d("AAAAAAAAAAAAAAAAAA", branch.foos?.size.toString())
-
         branch.foos?.forEach {
             val key = functionToNumber[it.functionName]
             functions[key]?.setImageResource(R.drawable.approved)
         }
 
-        val list1 = arrayOf("пн", "вт", "ср", "чт", "пт-вс")
-        val list2 =
-            arrayOf("10:00-19:00", "10:00-19:00", "10:00-19:00", "10:00-19:00", "10:00-29:00")
-        val adapter = MyListAdapter(this, list1, list2)
+        val adapter = MyListAdapter(this, ARR_DATES, ARR_HOURS)
         ulList.adapter = adapter
         flList.adapter = adapter
 
@@ -593,7 +592,10 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
         }
     }
 
-    fun addCalendarEvent(time: Long) {
+    /**
+     * Add Calendar event feature
+     * */
+    private fun addCalendarEvent(time: Long) {
         val intent = Intent(Intent.ACTION_EDIT)
         intent.type = "vnd.android.cursor.item/event"
         intent.putExtra("beginTime", time)
@@ -606,6 +608,7 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
     /**
      * Filter dialogue
      * */
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun showFilterDialog() {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -1002,6 +1005,10 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
             "Международные переводы" to 5,
             "Услуги страхования" to 6,
         )
+
+
+        private val ARR_DATES = arrayOf("пн", "вт", "ср", "чт", "пт-вс")
+        private val ARR_HOURS = arrayOf("10:00-19:00", "10:00-19:00", "10:00-19:00", "10:00-19:00", "10:00-29:00")
     }
 
     override fun onTimeSet(p0: TimePicker?, p1: Int, p2: Int) {
@@ -1012,5 +1019,4 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
 
         addCalendarEvent(time)
     }
-
 }
